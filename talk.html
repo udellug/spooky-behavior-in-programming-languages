@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Title</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# Messed Up Stuff In Programming Languages
+
+---
+
+# TOC
+
+0. Easy Javascript
+1. Javascript `[].map(parseInt)`
+2. Python Scopes
+3. Bash string quoting
+4. C Bullshit
+
+---
+
+# Easy Javascript
+
+<!--
+
+  [] + [] => empty string!
+  [] + {} => type error? no! object
+  {} + [] => obviously the same! 0
+  {} + {} => NaN! technically correct!
+
+-->
+---
+
+# Javascript
+
+```javascript
+> ['1', '7', '11'].map(parseInt)
+[ 1, NaN, 3 ]
+```
+
+WTF?
+
+---
+
+# Javascript
+## Falsiness
+
+False:
+- `false`
+- 0
+- "" (empty string)
+- `null`
+- `undefined`
+- `NaN`
+
+---
+
+# Javascript
+## Truthiness
+
+True:
+- "false"
+- "0"
+- {} (empty object)
+- [] (empty array)
+- really anything that isn't `false`
+
+---
+
+# Radix
+
+Ready to learn number systems *again*??
+
+---
+
+# Radix
+
+radix - smallest number which can only be represented by more than one symbol
+
+---
+
+# Radix
+
+```
+DECIMAL   BINARY    HEXADECIMAL
+RADIX=10  RADIX=2   RADIX=16
+0         0         0
+1         1         1
+2         10        2
+3         *11*      3
+4         100       4
+5         101       5
+6         110       6
+7         111       7
+8         1000      8
+9         1001      9
+10        1010      A
+*11*      1011      B
+12        1100      C
+13        1101      D
+14        1110      E
+15        1111      F
+16        10000     10
+17        10001     *11*```
+
+---
+
+# Javascript
+## Function Arguments
+
+Javascript does not require a function to be called with the same number of
+arguments it is defined to consume
+
+Example:
+
+```javascript
+function foo(x, y) {
+    console.log(x);
+    console.log(y);
+}
+```
+
+What happens when we do `foo(1, 2)`? `foo(1)`? `foo(1, 2, 3)`?
+
+---
+
+# Functional Programming
+
+Common concepts have handy functions:
+
+- map: apply function to everything in list
+- filter: return list filtered by things that satisfy a function
+- reduce: return one item created by calling a function on each item in list
+
+Each function takes a function and a list and applies the function to the list in it's own way
+
+This is a common pattern so even imperative languages like Javascript (and Python, C, etc.) have added similar features
+
+---
+# Javascript
+## `map()` to multiply an array by 3
+
+```javascript
+function multiplyBy3(x) {
+    return x * 3;
+}
+
+[1, 2, 3, 4, 5].map(multiplyBy3);
+```
+
+---
+# Javascript
+## `map()` to `console.log` each item in an array
+
+```javascript
+function multiplyBy3(x) {
+    return x * 3;
+}
+
+[1, 2, 3, 4, 5].map(console.log);
+```
+
+This does something very strange
+
+---
+# Javascript
+## `map()` to `console.log` each item in an array
+
+Instead of map doing this, as you might expect:
+```javascript
+console.log(val)
+```
+
+If actually does this:
+```javascript
+console.log(val, index, array)
+```
+
+So the function map calls actually gets three arguments! Remember when we talked about functions accepting any number of arguments?
+
+---
+# Javascript
+## `parseInt(string, radix)`
+
+`parseInt` takes two arguments: `string` and `radix`
+
+if radix is falsy, `parseInt` uses 10
+
+```javascript
+parseInt('11');                => 11
+parseInt('11', 2);             => 3
+parseInt('11', 16);            => 17
+
+parseInt('11', undefined);     => 11 (radix is falsy)
+parseInt('11', 0);             => 11 (radix is falsy)
+```
+
+---
+# Javascript
+## A solution
+
+Since map will call `parseInt` with 3 arguments by default, but arguments aren't what `parseInt` expects, we should be more explicit when using map for this purpose.
+
+```javascript
+['1', '7', '11'].map(numStr => parseInt(numStr));
+```
+
+By writing our own lambda, we can enforce that `parseInt` gets called with exactly one argument.
+
+---
+
+# Bash
+
+---
+
+# Bash
+
+`$@` is the array of all arguments to a function in bash
+
+```bash
+function print_names() {
+  for name in $@; do
+    echo $name
+  done
+}
+```
+
+Naturally this prints out all the names given to it
+
+read this: https://mywiki.wooledge.org/Quotes
+
+---
+
+# C
+
+Would this ever print `TRUE`?
+
+```c
+void weird(int x) {
+  if(x < 0 && -x < 0){
+    printf("TRUE\n");
+  }
+  else {
+    printf("FALSE\n");
+  }
+}
+```
+
+---
+
+# C
+
+Would this ever print `TRUE`?
+
+```c
+void weird(int x) {
+  if(x < 0 && -x < 0){
+    printf("TRUE\n");
+  }
+  else {
+    printf("FALSE\n");
+  }
+}
+```
+We can look at the assembly here https://godbolt.org/
+
+<!--# Sources-->
+
+<!--https://medium.com/dailyjs/parseint-mystery-7c4368ef7b21-->
+<!-- https://mywiki.wooledge.org/Quotes -->
+
+    </textarea>
+    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>
